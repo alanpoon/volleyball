@@ -1,0 +1,8 @@
+**/target
+build
+**/pkg
+templates/www/nohup.out
+templates/data/resources
+templates/data/permissions
+templates/data/users
+templates/data/snapshots

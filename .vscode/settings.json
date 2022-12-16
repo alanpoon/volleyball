@@ -1,0 +1,10 @@
+{
+    "search.exclude": {
+        "**/target": true
+    },
+    "lldb.verboseLogging": true,
+    "rust-analyzer.linkedProjects": [
+        
+"templates/Cargo.toml"
+    ]
+}

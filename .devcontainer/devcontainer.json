@@ -1,0 +1,51 @@
+{
+	"name": "bevy_cloud",
+
+	// Update the 'dockerComposeFile' list if you have more compose files or use different names.
+	"dockerComposeFile": "docker-compose.yml",
+
+	// The 'service' property is the name of the service for the container that VS Code should
+	// use. Update this value and .devcontainer/docker-compose.yml to the real service name.
+	"service": "app",
+
+	// The 'workspaceFolder' property is the path VS Code should open by default when
+	// connected. Corresponds to a volume mount in .devcontainer/docker-compose.yml
+	"workspaceFolder": "/workspace",
+	// Set *default* container specific settings.json values on container create.
+	// Configure tool-specific properties.
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			// Set *default* container specific settings.json values on container create.
+			"settings": { 
+				"lldb.executable": "/usr/bin/lldb",
+				// VS Code don't watch files under ./target
+				"files.watcherExclude": {
+					"**/target/**": true
+				},
+				"rust-analyzer.checkOnSave.command": "clippy"
+			},
+			
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"vadimcn.vscode-lldb",
+				"mutantdino.resourcemonitor",
+				"matklad.rust-analyzer",
+				"tamasfe.even-better-toml",
+				"serayuzgur.crates"
+			]
+		}
+	},
+
+	// Uncomment the next line if you want to keep your containers running after VS Code shuts down.
+	// "shutdownAction": "none",
+
+	// Uncomment the next line to use 'postCreateCommand' to run commands after the container is created.
+	// "postCreateCommand": "uname -a",
+
+	// Comment out to connect as root instead. To add a non-root user, see: https://aka.ms/vscode-remote/containers/non-root.
+	"remoteUser": "vscode",
+	//"postCreateCommand": "sudo chown -R vscode:rustlang /usr/local/cargo"
+	"postCreateCommand": "sudo chown -R vscode:rustlang /usr/local/cargo && (cd templates && nats-rest-config-proxy -d data)"
+	//"postCreateCommand": "sudo chown -R vscode:rustlang /usr/local/cargo && sudo nohup sudo nats-rest-config-proxy -d /etc/nats-rest-config-proxy-data > /home/vscode/workspace/wort3.out > /dev/null 2>&1 &"
+}

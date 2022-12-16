@@ -1,0 +1,28 @@
+[workspace]
+resolver = "2"
+
+members = [
+  "actors/*"
+]
+
+default-members = [
+  "actors/*"
+]
+
+[profile.release]
+debug = true
+
+[patch.crates-io]
+wasmbus-rpc= {git ="https://github.com/wasmCloud/weld", rev="8a056a18cd3f80df05de5d13d31e9a5878ceb3a5"}
+wasmbus-macros= {git ="https://github.com/wasmCloud/weld", rev="8a056a18cd3f80df05de5d13d31e9a5878ceb3a5"}
+getrandom = {git ="https://github.com/alanpoon/bevy_wasmcloud_patches"}
+
+[patch."https://github.com/bevyengine/bevy"]
+bevy_app = {git ="https://github.com/alanpoon/bevy_wasmcloud_patches"}
+bevy_internal = {git ="https://github.com/alanpoon/bevy_wasmcloud_patches"}
+bevy_render = {git ="https://github.com/alanpoon/bevy_wasmcloud_patches"}
+bevy_time = {git ="https://github.com/alanpoon/bevy_wasmcloud_patches"}
+
+#[patch."https://github.com/alanpoon/bevy_wasmcloud_lib"]
+#nats-lite = {path="../../bevy_wasmcloud_lib/crates/nats-lite"}
+#wasmcloud-interface-thread = {path = "../../bevy_wasmcloud_lib/crates/interfaces/thread/rust"}
