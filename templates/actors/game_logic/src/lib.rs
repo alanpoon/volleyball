@@ -15,6 +15,7 @@ use messaging::*;
 use crate::thread::thread_handle_request;
 use lazy_static::lazy_static;
 use bevy::prelude::*;
+use bevy_rapier2d::prelude::*;
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use serde::{Serialize,Deserialize};
@@ -39,20 +40,10 @@ impl Thread for GameLogicActor{
       .add_plugin(TransformPlugin::default())
       .add_plugin(PhysicsPlugin)
       .add_plugin(SharedPlugin)
+      .add_startup_system(startup::volleyball_setup)
       ;
       
     }
-    let provider = ThreadSender::new();
-    if let Err(e) = provider
-        .start_thread(
-            ctx,
-            start_thread_request,
-        )
-        .await
-    {
-        error!("sending reply: {}",e.to_string());
-    }
-    info!("end_thread----");
     Ok(StartThreadResponse{})
   }
   async fn tick(&self, _ctx: &Context, start_thread_request: &u64) -> RpcResult<u32> {
@@ -74,7 +65,9 @@ impl MessageSubscriber for GameLogicActor{
           let map = APP.clone();
           client_message_handlers::welcome_handler::_fn(map,game_id,ball_id,ball_label).await;
         }
-        
+        Ok(ClientMessage::Jump{ball_id,..})=>{
+          
+        }
         Err(e)=>{
           info!("client_message err {:?}",e);
         }

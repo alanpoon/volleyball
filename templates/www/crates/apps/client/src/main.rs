@@ -4,6 +4,9 @@ use bevy::utils::Duration;
 use plugin_physics_rapier::PhysicsPlugin;
 use plugin_protocol::ProtocolPlugin;
 use shared::SharedPlugin;
+use plugin_map::MapPlugin;
+use plugin_sprite_character::SpriteCharacterPlugin;
+use plugin_ui::UiPlugin;
 #[bevy_main]
 pub fn main() {
     let mut app = App::new();
@@ -21,6 +24,9 @@ pub fn main() {
     .add_plugins(DefaultPlugins)
     .add_plugin(PhysicsPlugin)
     .add_plugin(SharedPlugin)
+    .add_plugin(MapPlugin)
+    .add_plugin(SpriteCharacterPlugin)
+    .add_plugin(UiPlugin)
     .add_plugin(ProtocolPlugin);
     app.run();
 }

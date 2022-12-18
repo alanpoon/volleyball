@@ -1,0 +1,16 @@
+[package]
+name = "boltless-plugin-ui"
+version = "0.1.0"
+authors = ["Alan poon <brightshadowx@gmail.com>"]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bevy = { version = "0.8.1", default-features = false }
+nats-lite = {git = "https://github.com/alanpoon/bevy_wasmcloud_lib"}
+protocol = { package = "boltless-protocol", path = "../../components/protocol", version = "0.1.0" }
+shared = { path = "../../../../shared"}
+rand = "0.8.5"
+rmp-serde = "1.1.0"

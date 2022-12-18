@@ -10,8 +10,16 @@ use std::sync::{Arc, Mutex};
 use wasmbus_rpc::actor::prelude::*;
 use wasmcloud_interface_numbergen::random_in_range;
 pub async fn _fn (map:Arc<Mutex<App>>,game_id:String,ball_id:BallId,ball_label:BallLabel)-> RpcResult<()>{
-    let x = random_in_range(0,300).await? as f32;
-    let y = random_in_range(0,300).await? as f32;
+  let (x,y) = if ball_id.1{
+    let x = random_in_range(0,900).await? as f32;
+    let y = -100.0;
+    (-x,y)
+  }else{
+    let x = random_in_range(0,900).await? as f32;
+    let y = -100.0;
+    (x,y)
+  };
+    
     let ball_bundle = BallBundle{
       ball_id:ball_id,
       ball_label:ball_label.clone(),
@@ -20,7 +28,8 @@ pub async fn _fn (map:Arc<Mutex<App>>,game_id:String,ball_id:BallId,ball_label:B
       velocity:Velocity::zero(),
       rigid_body:RigidBody::Dynamic,
       locked_axes:LockedAxes::ROTATION_LOCKED,
-      interpolated:TransformInterpolation::default()
+      interpolated:TransformInterpolation::default(),
+      collider:Collider::ball(50.0)
     };
     {
       let guard = match map.lock() {
@@ -53,11 +62,29 @@ pub async fn _fn (map:Arc<Mutex<App>>,game_id:String,ball_id:BallId,ball_label:B
             transform:transform.clone(),global_transform:GlobalTransform::identity(),
             velocity:velocity.clone(),rigid_body:RigidBody::Dynamic,
             locked_axes:LockedAxes::ROTATION_LOCKED,
-            interpolated:TransformInterpolation::default()});
+            interpolated:TransformInterpolation::default(),
+            collider:Collider::ball(50.0)});
         }
       }
-
-      let channel_message_back = ServerMessage::GameState{ball_bundles:ball_bundles};
+      let mut query = app.world.query::<(&VolleyBall,&Transform,&Velocity)>();
+      let mut volleyball_bundle = VolleyBallBundle{
+        volley_id: VolleyBall{
+          last_touch:None
+        },
+        global_transform: GlobalTransform::identity(),
+        locked_axes:LockedAxes::ROTATION_LOCKED,
+        transform: Transform::from_xyz(0.0,0.0,0.0),
+        velocity: Velocity::zero(),
+        rigid_body:RigidBody::Dynamic,
+        interpolated: TransformInterpolation::default(),
+        collider: Collider::ball(50.0)
+      };
+      for (_,t,v) in query.iter(&app.world){
+        volleyball_bundle.transform = t.clone();
+        volleyball_bundle.velocity = v.clone();
+        info_(format!("volleyball_bundle {:?}",volleyball_bundle.clone()));
+      }
+      let channel_message_back = ServerMessage::GameState{ball_bundles:ball_bundles,volleyball_bundle:volleyball_bundle};
       match rmp_serde::to_vec(&channel_message_back){
         Ok(b)=>{
           let p_msg = PubMessage{

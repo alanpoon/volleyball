@@ -13,12 +13,17 @@ pub fn _fn (map:Arc<Mutex<App>>,_game_id:String,ball_id:BallId,target_velocity:V
     },
   };
   let mut app = guard;
-  let mut velocity_query= app.world.query::<(&BallId,&Transform,&mut Velocity)>();
-  for (gball_id,transform,mut velocity) in velocity_query.iter_mut(&mut app.world){
+  let mut velocity_query= app.world.query::<(Entity,&BallId,&Transform,&mut Velocity)>();
+  let mut spawn_timer = None;
+  for (e,gball_id,transform,mut velocity) in velocity_query.iter_mut(&mut app.world){
     if gball_id.0 ==ball_id.0{
       update::target_velocity::velocity(&mut velocity, target_velocity.clone());
-     
-     }
+      spawn_timer = Some(e);
+    }
+  }
+  if let Some(e) = spawn_timer{
+    app.world.entity_mut(e)
+    .insert(MoveTimer(Timer::from_seconds(1.0,false)));
   }
   
 }

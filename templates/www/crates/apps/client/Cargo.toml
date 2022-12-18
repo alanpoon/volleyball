@@ -8,6 +8,9 @@ license = "MIT OR Apache-2.0"
 [dependencies]
 plugin-protocol = { package = "boltless-plugin-protocol", path = "../../plugins/protocol", version = "0.1.0" }
 plugin-physics-rapier = { package = "boltless-plugin-physics-rapier", path = "../../plugins/physics-rapier", version = "0.1.0" }
+plugin-sprite-character = { package = "boltless-plugin-sprite-character", path = "../../plugins/sprite-character", version = "0.1.0" }
+plugin-map = { package = "boltless-plugin-map", path = "../../plugins/map", version = "0.1.0" }
+plugin-ui = { package = "boltless-plugin-ui", path = "../../plugins/ui", version = "0.1.0" }
 shared = { path = "../../../../shared" }
 bevy = { version = "0.8.1" ,features =[]}
 tracing-subscriber = "0.2.19"

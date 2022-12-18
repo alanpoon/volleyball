@@ -1048,8 +1048,11 @@ name = "boltless-client"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "boltless-plugin-map",
  "boltless-plugin-physics-rapier",
  "boltless-plugin-protocol",
+ "boltless-plugin-sprite-character",
+ "boltless-plugin-ui",
  "log",
  "shared",
  "tracing-subscriber 0.2.25",
@@ -1075,6 +1078,15 @@ dependencies = [
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "ws_stream_wasm",
+]
+
+[[package]]
+name = "boltless-plugin-map"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+ "chrono",
+ "shared",
 ]
 
 [[package]]
@@ -1119,6 +1131,33 @@ dependencies = [
  "wasmbus-rpc",
  "wasmcloud-interface-messaging",
  "web-sys",
+]
+
+[[package]]
+name = "boltless-plugin-sprite-character"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+ "js-sys",
+ "rand 0.8.5",
+ "rmp-serde 1.1.1",
+ "serde",
+ "serde-wasm-bindgen",
+ "shared",
+ "wasm-bindgen",
+ "web-sys",
+]
+
+[[package]]
+name = "boltless-plugin-ui"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+ "boltless-protocol",
+ "nats-lite",
+ "rand 0.8.5",
+ "rmp-serde 1.1.1",
+ "shared",
 ]
 
 [[package]]

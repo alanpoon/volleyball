@@ -67,14 +67,13 @@ impl Plugin for ProtocolPlugin {
                     .after(ProtocolSystem::ReceiveEvents)
                     .before(ProtocolSystem::SendCommands),
             )
-            //.add_system(system::camera::move_with_local_player)
             .add_system(
                 send_commands
                     .label(ProtocolSystem::SendCommands)
                     .after(ProtocolSystem::ReceiveEvents),
             );
         app.add_startup_system(connect_websocket.label(ProtocolSystem::ConnectWebSocket))
-        .add_startup_system(startup::new_ball::new_ball.after(ProtocolSystem::ConnectWebSocket));
+        ;
         #[cfg(target_arch = "wasm32")]
         app.add_system(set_client);
 
@@ -83,7 +82,8 @@ impl Plugin for ProtocolPlugin {
 
 fn handle_events(
     mut cmd: Commands,
-    mut balls: Query<(&BallId, &Transform, &mut Velocity)>,
+    mut balls: Query<(Entity,&BallId, &Transform, &mut Velocity)>,
+    cooldown_query: Query<&CoolDownTimer>,
     mut commands: ResMut<protocol::Commands>,
     mut events: ResMut<protocol::Events>,
     mut keyboard_input: ResMut<Input<KeyCode>>,
@@ -139,10 +139,14 @@ fn handle_events(
         target_velocity_y -= 1.0;
         pressed = true;
     }
+    if keyboard_input.just_pressed(KeyCode::Space){
+        target_velocity_y +=1.0;
+        pressed = true;
+    }
     keyboard_input.clear();
 
     if pressed {
-        for (ball_id_ingame, t, mut v) in balls.iter_mut() {
+        for (entity,ball_id_ingame, t, mut v) in balls.iter_mut() {
             let ball_id = (*local_user_info).0.ball_id;
             if ball_id_ingame == &ball_id {
                 let mut send = false;
@@ -154,11 +158,14 @@ fn handle_events(
                     }
                 }
                 if target_velocity_y != 0.0 {
-                    if v.linvel.y / target_velocity_y < 0.0 {
-                        send = true;
-                    } else if v.linvel.y == 0.0 {
-                        send = true;
+                    if t.translation.y <200.0{
+                        if v.linvel.y / target_velocity_y < 0.0 {
+                            send = true;
+                        } else if v.linvel.y == 0.0 {
+                            send = true;
+                        }
                     }
+                    
                 }
                 if send {
                     info!(
@@ -171,6 +178,8 @@ fn handle_events(
                         target_velocity_y,
                         &mut v,
                     );
+                    
+                    cmd.entity(entity).insert(MoveTimer(Timer::from_seconds(3.0,false)));
                     for c in c {
                         (*commands).push(c);
                     }
@@ -225,6 +234,7 @@ fn receive_events(
     mut events: ResMut<protocol::Events>,
     mut set: ParamSet<(
         Query<(Entity, &BallId, &mut Transform, &mut Velocity), With<BallId>>,
+        Query<(Entity, &VolleyBall, &mut Transform, &mut Velocity), With<VolleyBall>>,
         // also access the whole world ... why not
         //&World,
     )>,
@@ -269,9 +279,10 @@ fn receive_events(
 
                                         ServerMessage::GameState {
                                             ball_bundles,
+                                            volleyball_bundle,
                                             ..
                                         } => {
-                                            
+                                            msg_handler::game_state::_fn_spawn_or_update_volleyball_bundles(&mut cmd,&mut set,volleyball_bundle);
                                             msg_handler::game_state::_fn_spawn_or_update_ball_bundles(&mut cmd,&mut set,ball_bundles);
                                         }
                                         _ => {}
@@ -286,6 +297,7 @@ fn receive_events(
                                             info!("welcome_ ball_bundle {:?}", ball_bundle.clone());
                                             cmd.spawn_bundle(ball_bundle.clone());
                                             if ball_bundle.ball_id == (*local_user_info).0.ball_id {
+                                                //b.insert(KinematicCharacterController::default());
                                             }
                                         }
                                         _ => {}

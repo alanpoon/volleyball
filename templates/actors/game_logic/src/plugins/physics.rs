@@ -8,7 +8,7 @@ impl Plugin for PhysicsPlugin {
       app.add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
           .insert_resource(RapierConfiguration {
             //scale:1.0,
-            gravity: Vect::ZERO,
+            gravity: Vec2{x:0.0,y:-300.0},
             timestep_mode: TimestepMode::Interpolated{
               dt:1.0/60.0,
               time_scale:1.0,

@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy::sprite::{MaterialMesh2dBundle,Mesh2dHandle};
 use shared::*;
-pub fn add_shape(mut cmd: Commands,ball_query:Query<(Entity,&BallId,&BallLabel,&Transform),Without<Mesh2dHandle>>,
+pub fn add_player_shape(mut cmd: Commands,ball_query:Query<(Entity,&BallId,&BallLabel,&Transform),Without<Mesh2dHandle>>,
 mut materials: ResMut<Assets<ColorMaterial>>,
 mut meshes: ResMut<Assets<Mesh>>,
 asset_server: Res<AssetServer>){
@@ -32,4 +32,16 @@ asset_server: Res<AssetServer>){
               });
            });
     }
+}
+pub fn add_volleyball_shape(mut cmd: Commands,ball_query:Query<(Entity,&VolleyBall,&Transform),Without<Mesh2dHandle>>,
+mut materials: ResMut<Assets<ColorMaterial>>,
+mut meshes: ResMut<Assets<Mesh>>){
+  for (entity,vball,transform) in ball_query.iter(){
+    cmd.entity(entity).insert_bundle(MaterialMesh2dBundle {
+      mesh: meshes.add(shape::Circle::new(50.).into()).into(),
+      material: materials.add(ColorMaterial::from(Color::GREEN)),
+      transform: transform.clone(),
+      ..default()
+    });
+  }
 }

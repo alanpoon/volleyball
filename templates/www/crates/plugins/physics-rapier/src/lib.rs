@@ -14,10 +14,11 @@ impl Plugin for PhysicsPlugin {
                     time_scale: 1.0,
                     substeps: 1,
                 },
-                gravity: Vect::ZERO,
+                gravity: Vec2{x:0.0,y:-300.0},
                 ..Default::default()
             })
-            .add_system(system::add_shape)
+            .add_system(system::add_player_shape)
+            .add_system(system::add_volleyball_shape)
             .add_startup_system(shape::setup);
     }
 }

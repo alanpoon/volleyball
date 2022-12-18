@@ -33,8 +33,9 @@ pub fn target_velocity(
         reply_to: None,
         payload: tv_,
     };
+    update::target_velocity::velocity(vel,t_v);
     info!("vel,{:?} t_v {:?}",vel,t_v.clone());
-    update::target_velocity::velocity(vel, t_v.clone());
+ 
     vec![
         Command::Nats(String::from("default"), n1),
         Command::Nats(String::from("default"), n2),

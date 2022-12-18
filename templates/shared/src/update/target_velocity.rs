@@ -7,6 +7,6 @@ pub fn velocity(mut v:&mut Velocity,tv:Vec2 ){
     } else{
         std::f32::consts::SQRT_2
     };
-    v.linvel.x = tv.x *50.0 * f;
-    v.linvel.y = tv.y * 50.0 * f;
+    v.linvel.x = tv.x *200.0 * f;
+    v.linvel.y = tv.y * 700.0 * f;
 }

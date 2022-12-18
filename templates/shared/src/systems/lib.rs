@@ -2,7 +2,7 @@ use core::DeskSystem;
 
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
-use shared::{BallId};
+use shared::{BallId,systems};
 pub struct PhysicsPlugin;
 const LINEAR_DAMPING: f32 = 8.0;
 use crate::nalgebra::Vector2;
@@ -16,9 +16,10 @@ impl Plugin for PhysicsPlugin {
         app.add_plugin(RapierPhysicsPlugin::<NoUserData,>::default())    
             .insert_resource(RapierConfiguration {
                 scale: 1.0,
-                gravity: Vector2::zeros(),
+                gravity: Vector2{x:0.0,y:-300.0},
                 ..Default::default()
-            });
+            })
+            .add_plugin(RapierDebugRenderPlugin::default());
            
     }
 }

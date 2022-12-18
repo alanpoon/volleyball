@@ -4,7 +4,8 @@ use shared::*;
 
 pub fn _fn_spawn_or_update_ball_bundles(
     cmd: &mut Commands,
-    set: &mut ParamSet<(Query<(Entity, &BallId, &mut Transform, &mut Velocity), With<BallId>>,)>,
+    set: &mut ParamSet<(Query<(Entity, &BallId, &mut Transform, &mut Velocity), With<BallId>>,
+    Query<(Entity, &VolleyBall, &mut Transform, &mut Velocity), With<VolleyBall>>,)>,
     ball_bundles: Vec<BallBundle>,
 ) {
     let len = ball_bundles.len();
@@ -24,5 +25,25 @@ pub fn _fn_spawn_or_update_ball_bundles(
         if !founds.contains(&i) {
             cmd.spawn_bundle(ball_bundle.clone());
         }
+    }
+}
+pub fn _fn_spawn_or_update_volleyball_bundles(
+    cmd: &mut Commands,
+    set: &mut ParamSet<(Query<(Entity, &BallId, &mut Transform, &mut Velocity), With<BallId>>,
+    Query<(Entity, &VolleyBall, &mut Transform, &mut Velocity), With<VolleyBall>>,)>,
+    volleyball_bundle: VolleyBallBundle,
+) {
+    let mut found = false;
+    for (_e, volleyball_id, mut t, mut v) in set.p1().iter_mut() {
+        info!("some volley");
+        *v = volleyball_bundle.velocity;
+        *t = volleyball_bundle.transform;
+        found = true;
+        break
+        
+    }
+    if !found{
+        info!("some volley bundle {:?}",volleyball_bundle);
+        cmd.spawn_bundle(volleyball_bundle);
     }
 }
