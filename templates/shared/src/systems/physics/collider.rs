@@ -10,23 +10,23 @@ pub fn collider_setup(mut cmd:Commands){
         -300.0,
         3.0,
     )))
-    .insert(Collider::cuboid(2000.0, 10.0)).insert(OutOfBound);
+    .insert(Collider::cuboid(2000.0, 10.0)).insert(OutOfBound).insert(ActiveEvents::COLLISION_EVENTS);
     //net
     cmd.spawn_bundle(TransformBundle::from(Transform::from_xyz(
         0.0,-50.0,2.0
     )))
-   .insert(Collider::cuboid(45.0, 380.0)).insert(OutOfBound);
+   .insert(Collider::cuboid(45.0, 380.0)).insert(OutOfBound).insert(ActiveEvents::COLLISION_EVENTS);
    //ceiling
     cmd.spawn_bundle(TransformBundle::from(Transform::from_xyz(
-    -940.0,
-    1000.0,
-    2.0,
+        -940.0,
+        1000.0,
+        2.0,
     )))
     .insert(Collider::cuboid(2000.0, 10.0));
     //left wall
     cmd.spawn_bundle(TransformBundle::from(Transform::from_xyz(-940.0,-720.0,2.0)))
-    .insert(Collider::cuboid(50.0, 2040.0)).insert(OutOfBound);
+    .insert(Collider::cuboid(50.0, 2040.0)).insert(OutOfBound).insert(ActiveEvents::COLLISION_EVENTS);
     //right wall
     cmd.spawn_bundle(TransformBundle::from(Transform::from_xyz(940.0,-720.0,2.0)))
-    .insert(Collider::cuboid(50.0, 2040.0)).insert(OutOfBound);
+    .insert(Collider::cuboid(50.0, 2040.0)).insert(OutOfBound).insert(ActiveEvents::COLLISION_EVENTS);
 }

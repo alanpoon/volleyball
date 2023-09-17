@@ -17,6 +17,7 @@ impl Plugin for SharedPlugin {
           .add_system(systems::physics::update_state_velocity_physics)
           .add_system(systems::physics::player::remove_move_by_timer)
           .add_system(systems::volleyball_movement)
+          .add_system(systems::volley_collision)
           .add_startup_system(systems::physics::collider::collider_setup)
           ;
            

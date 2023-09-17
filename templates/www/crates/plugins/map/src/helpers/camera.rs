@@ -41,8 +41,8 @@ pub fn movement(
         let z = transform.translation.z;
         transform.translation.z = z;
         transform.translation+= direction;
-        for (mut text,mut _s,mut _g)  in text_query.iter_mut() {
-            text.sections[0].value = format!(r#"translation {:?} scale {:?}"#,transform.translation,ortho.scale);
-        }
+        // for (mut text,mut _s,mut _g)  in text_query.iter_mut() {
+        //     text.sections[0].value = format!(r#"translation {:?} scale {:?}"#,transform.translation,ortho.scale);
+        // }
     }
 }

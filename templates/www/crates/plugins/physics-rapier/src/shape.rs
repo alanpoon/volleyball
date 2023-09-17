@@ -13,7 +13,6 @@ pub fn setup(
         },
         ..default()
     })
-    //.insert_bundle(TransformBundle::from_transform(Transform::from_xyz(0.0,0.0,2.0)));
     .insert_bundle(TransformBundle::from_transform(Transform::from_xyz(0.0,-50.0,2.0)));
 
 }

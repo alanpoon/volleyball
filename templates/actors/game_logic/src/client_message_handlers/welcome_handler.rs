@@ -40,7 +40,6 @@ pub async fn _fn (map:Arc<Mutex<App>>,game_id:String,ball_id:BallId,ball_label:B
         },
       };
       let mut app = guard;
-      info_(format!("welcome {:?}",ball_bundle.clone()));
       spawn(&mut app.world,ball_bundle.clone());
       let server_message = ServerMessage::Welcome{ball_bundle};
       match rmp_serde::to_vec(&server_message){
@@ -82,7 +81,6 @@ pub async fn _fn (map:Arc<Mutex<App>>,game_id:String,ball_id:BallId,ball_label:B
       for (_,t,v) in query.iter(&app.world){
         volleyball_bundle.transform = t.clone();
         volleyball_bundle.velocity = v.clone();
-        info_(format!("volleyball_bundle {:?}",volleyball_bundle.clone()));
       }
       let channel_message_back = ServerMessage::GameState{ball_bundles:ball_bundles,volleyball_bundle:volleyball_bundle};
       match rmp_serde::to_vec(&channel_message_back){

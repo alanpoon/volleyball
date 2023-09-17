@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 use shared::*;
-pub mod new_ball;
-pub mod radio_button;
-
+mod new_ball;
+mod radio_button;
+mod score;
 
 pub struct UiPlugin;
 impl Plugin for UiPlugin {
@@ -15,7 +15,10 @@ impl Plugin for UiPlugin {
         radio_button::radio_button_group_system
             .label("radio_button_group_system")
             .after("radio_button_system"),
-        );
+        ).add_system(score::score_update)
+        .add_system(score::spawn_score_animation)
+        .add_system(score::score_animate)
+        .add_startup_system(score::score_setup);
   }
 }
 
@@ -49,6 +52,9 @@ fn button_system(
         }
     }
 }
-// fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
-    
-// }
+#[derive(Component,Clone,Debug)]
+pub struct TeamAScore;
+#[derive(Component,Clone,Debug)]
+pub struct TeamBScore;
+#[derive(Component,Clone,Debug)]
+pub struct PlusOne(Entity,pub Timer);//ScoreAnimation's entity

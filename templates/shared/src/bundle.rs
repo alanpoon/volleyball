@@ -65,7 +65,8 @@ pub struct VolleyBallBundle {
     pub velocity: Velocity,
     pub rigid_body:RigidBody,
     pub interpolated: TransformInterpolation,
-    pub collider: Collider
+    pub collider: Collider,
+    //pub sensor:Sensor
 }
 #[derive(Clone,Debug,Serialize,Deserialize)]
 struct VolleyBallBundleS {
@@ -101,6 +102,7 @@ impl<'de> Deserialize<'de> for VolleyBallBundle {
             locked_axes:LockedAxes::ROTATION_LOCKED,
             interpolated: TransformInterpolation::default(),
             collider: Collider::ball(50.0),
+            //sensor: Sensor
         })
     }
 }

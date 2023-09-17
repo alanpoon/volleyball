@@ -1,10 +1,10 @@
 use bevy::prelude::*;
 use std::collections::HashSet;
 use serde::{Deserialize, Serialize};
-mod bundle;
-mod systems;
-mod plugin;
-mod scoreboard;
+pub mod bundle;
+pub mod systems;
+pub mod plugin;
+pub mod scoreboard;
 pub use bundle::*;
 pub use systems::*;
 pub mod to_despawn;
@@ -52,3 +52,5 @@ pub struct VolleyBall{
 pub struct LastTouch(pub u32,pub bool); //ball_id, is_left
 #[derive(Component,Clone,Debug,Serialize, Deserialize)]
 pub struct OutOfBound;
+#[derive(Component,Clone,Debug)]
+pub struct ScoreAnimation(pub bool,pub Timer);//is_left
