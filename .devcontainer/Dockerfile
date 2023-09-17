@@ -39,7 +39,7 @@ RUN rustup target add wasm32-unknown-unknown
 RUN apt-get install iputils-ping -y
 RUN cargo install -f basic-http-server
 
-RUN wget https://github.com/nats-io/nats-rest-config-proxy/releases/download/v0.7.0/nats-rest-config-proxy-v0.7.0-linux-amd64.deb && dpkg -i nats-rest-config-proxy-v0.7.0-linux-amd64.deb
+RUN wget https://github.com/nats-io/nats-rest-config-proxy/releases/download/v0.7.0/nats-rest-config-proxy-v0.7.0-linux-arm64.deb && dpkg -i nats-rest-config-proxy-v0.7.0-linux-arm64.deb
 #ENTRYPOINT ["nohup","nats-rest-config-proxy","&"]
 
 #CMD ["nats-rest-config-proxy"]
