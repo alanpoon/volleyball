@@ -40,6 +40,13 @@ RUN apt-get install iputils-ping -y
 RUN cargo install -f basic-http-server
 
 RUN wget https://github.com/nats-io/nats-rest-config-proxy/releases/download/v0.7.0/nats-rest-config-proxy-v0.7.0-linux-arm64.deb && dpkg -i nats-rest-config-proxy-v0.7.0-linux-arm64.deb
+RUN cargo install cross --git https://github.com/cross-rs/cross
+RUN apt-get update \
+    && apt-get install -y apt-transport-https ca-certificates curl gnupg2 lsb-release \
+    && curl -fsSL https://download.docker.com/linux/$(lsb_release -is | tr '[:upper:]' '[:lower:]')/gpg | apt-key add - 2>/dev/null \
+    && echo "deb [arch=$(dpkg --print-architecture)] https://download.docker.com/linux/$(lsb_release -is | tr '[:upper:]' '[:lower:]') $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list \
+    && apt-get update \
+    && apt-get install -y docker-ce-cli
 #ENTRYPOINT ["nohup","nats-rest-config-proxy","&"]
 
 #CMD ["nats-rest-config-proxy"]

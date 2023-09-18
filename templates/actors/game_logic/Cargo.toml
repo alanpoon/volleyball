@@ -8,15 +8,15 @@ edition = "2021"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-wasmbus-rpc = "=0.9.2"
+wasmbus-rpc = "0.14.0"
 async-trait = "0.1"
 serde_bytes = "0.11"
 serde = { version = "1.0.123", features = ["derive"]}
 futures = "0.3"
-wasmcloud-interface-logging = "=0.6.0"
-wasmcloud-interface-messaging = "=0.6.0"
-wasmcloud-interface-numbergen = "=0.6.0"
-wasmcloud-interface-thread = { git = "https://github.com/alanpoon/bevy_wasmcloud_lib"}
+wasmcloud-interface-logging = "0.10.0"
+wasmcloud-interface-messaging = "0.10.0"
+wasmcloud-interface-numbergen = "0.10.0"
+wasmcloud-interface-thread = { path = "../../interfaces/thread/rust"}
 convert_case = "0.1.0"
 lazy_static = "1.4.0"
 shared = {path = "../../shared"}
