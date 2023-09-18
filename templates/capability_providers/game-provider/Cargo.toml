@@ -1,0 +1,27 @@
+[package]
+name = "game-provider"
+version = "0.1.0"
+authors = ["Alan Poon <brightshadowx@gmail.com>"]
+edition = "2018"
+
+[features]
+# Enable if the provider will be statically compiled into a host
+static_plugin = []
+
+[dependencies]
+#wasmbus-rpc = "=0.9.2"
+wasmbus-rpc = "0.14.0"
+async-trait = "0.1"
+log = "0.4.8"
+env_logger = "0.8.3"
+lazy_static = "1.4.0"
+wasmcloud-interface-thread = { path = "../../interfaces/thread/rust"}
+chrono = "0.4.19"
+tokio = { version = "1", features = ["full"] }
+
+[dependencies.wasmcloud-provider-core]
+version = "0.1.0"
+
+#[patch.crates-io]
+#wasmbus-rpc= {git ="https://github.com/wasmCloud/weld", rev="8a056a18cd3f80df05de5d13d31e9a5878ceb3a5"}
+#wasmbus-macros= {git ="https://github.com/wasmCloud/weld", rev="8a056a18cd3f80df05de5d13d31e9a5878ceb3a5"}

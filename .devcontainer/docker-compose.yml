@@ -10,16 +10,19 @@ services:
       args: 
         VARIANT: bullseye
         WASM_BINDGEN_VERSION: "0.2.83"
+    init: true
     volumes:
       # This is where VS Code should expect to find your project's source code and the value of "workspaceFolder" in .devcontainer/devcontainer.json
       - ..:/workspace:cached
       - ../templates/contexts:/home/vscode/.wash/contexts
+      - ../templates/keys:/home/vscode/.wash/keys
       - ../../cargo2/registry:/usr/local/cargo/registry
       - ../../cargo2/git:/usr/local/cargo/git
       - ../templates/configs/websocket_lite.conf:/etc/nats-server.conf
       - ../templates/data/current:/etc/current
       # Uncomment the next line to use Docker from inside the container. See https://aka.ms/vscode-remote/samples/docker-from-docker-compose for details.
-      # - /var/run/docker.sock:/var/run/docker.sock 
+      
+      - /var/run/docker.sock:/var/run/docker.sock 
 
     # Overrides default command so things don't shut down after the process ends.
     command: /bin/sh -c "while sleep 1000; do :; done"  
