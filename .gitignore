@@ -7,3 +7,5 @@ templates/data/permissions
 templates/data/users
 templates/data/snapshots
 t.txt
+!certs/.gitkeep
+certs/**
