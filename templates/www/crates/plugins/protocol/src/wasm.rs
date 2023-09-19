@@ -50,7 +50,11 @@ lazy_static! {
       auth_token:None,
       headers:true,
       lang:String::from("nats.ws"),
-      tls_required:false,
+      tls_required: if game_server().contains("wss") {
+        true
+      }else{
+        false
+      },
       version:String::from("1.1.0"),
     }
   ))].iter().cloned().collect());

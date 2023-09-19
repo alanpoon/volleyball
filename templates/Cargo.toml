@@ -3,12 +3,12 @@ resolver = "2"
 
 members = [
   "actors/*",
-  "interfaces/*/rust",
+  
 ]
 
 default-members = [
   "actors/*",
-  "interfaces/*/rust",
+ 
 ]
 exclude = ["capability_providers"]
 

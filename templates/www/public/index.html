@@ -7,8 +7,23 @@
 
 <canvas id="game"></canvas>
 <script>
+    // window.game_server = function(){
+    //   return 'ws://localhost:7083/';
+    // }
     window.game_server = function(){
-      return 'ws://localhost:7083/';
+        var ws = "ws://"
+        var port = "7082"
+        if (location.protocol == 'https:') {
+            ws= "wss://"
+            port = "7083"
+        }
+        let ws_location ="localhost"
+        
+        let domain = (new URL(location));
+        if (domain.hostname.includes("netlify")){
+            ws_location = "bevy.wasmmock"
+        }
+        return ws +ws_location+":"+port;
     }
 </script>
 <script type="module">
