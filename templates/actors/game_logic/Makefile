@@ -12,7 +12,7 @@ DEFAULT_REG_URL  = registry:5000/v2/$(PROJECT):$(VERSION)
 
 #REG_URL  = registry:5000/v2/$(PROJECT):$(VERSION)
 # command to upload to registry (without last wasm parameter)
-PUSH_REG_CMD = wash reg push --insecure $(REG_URL)
+PUSH_REG_CMD = wash push --insecure $(REG_URL)
 
 include ../../makefiles/actor.mk
 

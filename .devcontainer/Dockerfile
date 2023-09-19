@@ -15,19 +15,6 @@ ARG UPGRADE_PACKAGES="false"
 ARG USERNAME=vscode
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
-# Install needed packages and setup non-root user. Use a separate RUN statement to add your own dependencies.
-#COPY library-scripts/*.sh library-scripts/*.env /tmp/library-scripts/
-# RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-#     && /bin/bash /tmp/library-scripts/common-debian.sh "${INSTALL_ZSH}" "${USERNAME}" "${USER_UID}" "${USER_GID}" "${UPGRADE_PACKAGES}" "true" "true" \
-#     #
-    # ****************************************************************************
-    # * TODO: Add any additional OS packages you want included in the definition *
-    # * here. We want to do this before cleanup to keep the "layer" small.       *
-    # ****************************************************************************
-    # && apt-get -y install --no-install-recommends <your-package-list-here> \
-    #
-    #&& apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/library-scripts
-# RUN apt install glibc-source -y
 RUN apt-get install libcurl4-openssl-dev \
     && curl -s https://packagecloud.io/install/repositories/wasmcloud/core/script.deb.sh | bash && apt install wash \
     && which wash
@@ -37,9 +24,7 @@ RUN cargo install -f wasm-snip
 RUN cargo install -f cargo-make
 RUN rustup target add wasm32-unknown-unknown
 RUN apt-get install iputils-ping -y
-RUN cargo install -f basic-http-server
-
-RUN wget https://github.com/nats-io/nats-rest-config-proxy/releases/download/v0.7.0/nats-rest-config-proxy-v0.7.0-linux-arm64.deb && dpkg -i nats-rest-config-proxy-v0.7.0-linux-arm64.deb
+RUN wget "https://github.com/nats-io/nats-rest-config-proxy/releases/download/v0.7.0/nats-rest-config-proxy-v0.7.0-linux-$(uname -m | grep -q '^aarch64' && echo 'arm64' || echo 'amd64' ).deb" && dpkg -i "nats-rest-config-proxy-v0.7.0-linux-$(uname -m | grep -q '^aarch64' && echo 'arm64' || echo 'amd64' ).deb"
 RUN cargo install cross --git https://github.com/cross-rs/cross
 RUN apt-get update \
     && apt-get install -y apt-transport-https ca-certificates curl gnupg2 lsb-release \
@@ -47,18 +32,4 @@ RUN apt-get update \
     && echo "deb [arch=$(dpkg --print-architecture)] https://download.docker.com/linux/$(lsb_release -is | tr '[:upper:]' '[:lower:]') $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list \
     && apt-get update \
     && apt-get install -y docker-ce-cli
-#ENTRYPOINT ["nohup","nats-rest-config-proxy","&"]
-
-#CMD ["nats-rest-config-proxy"]
-# sudo nohup nats-rest-config-proxy -d /etc/nats-rest-config-proxy-data > t2.out > /dev/null 2>&1 &
-#RUN nohup nats-rest-config-proxy -d /etc/nats-rest-config-proxy-data > nats-rest.out 2>&1 < /dev/null &
-
-#  [Optional] Uncomment this section to install additional OS packages.
-# RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-#     && apt-get -y install --no-install-recommends <your-package-list-here>
-# RUN wget -c https://ftp.gnu.org/gnu/glibc/glibc-2.29.tar.gz \
-#     && tar -zxvf glibc-2.29.tar.gz \
-#     && cd glibc-2.29 \
-#     && ./configure --prefix=/opt/glibc \
-#     && make \
-#     && make install
+RUN sudo mkdir -p /home/vscode/.wash && sudo chmod 777 /home/vscode/.wash

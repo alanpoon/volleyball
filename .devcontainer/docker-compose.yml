@@ -3,6 +3,10 @@ version: '3'
 services:
   app:
     # Using a Dockerfile is optional, but included for completeness.
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
     build: 
       context: .
       dockerfile: Dockerfile
@@ -10,37 +14,23 @@ services:
       args: 
         VARIANT: bullseye
         WASM_BINDGEN_VERSION: "0.2.83"
+        DOCKER_BUILDKIT: 1
     init: true
     volumes:
       # This is where VS Code should expect to find your project's source code and the value of "workspaceFolder" in .devcontainer/devcontainer.json
       - ..:/workspace:cached
-      - ../templates/contexts:/home/vscode/.wash/contexts
-      - ../templates/keys:/home/vscode/.wash/keys
+      - ../templates/wasmcloud_contexts:/home/vscode/.wash/contexts
+      - ../templates/wash_keys:/home/vscode/.wash/keys
       - ../../cargo2/registry:/usr/local/cargo/registry
       - ../../cargo2/git:/usr/local/cargo/git
-      - ../templates/configs/websocket_lite.conf:/etc/nats-server.conf
-      - ../templates/data/current:/etc/current
+      - ../templates/nats-rest-config-proxy_data/current:/etc/current
       # Uncomment the next line to use Docker from inside the container. See https://aka.ms/vscode-remote/samples/docker-from-docker-compose for details.
       
       - /var/run/docker.sock:/var/run/docker.sock 
 
     # Overrides default command so things don't shut down after the process ends.
     command: /bin/sh -c "while sleep 1000; do :; done"  
-
-    # Runs app on the same network as the service container, allows "forwardPorts" in devcontainer.json function.
-    #network_mode: service:another-service
-    
-    # Use "forwardPorts" in **devcontainer.json** to forward an app port locally. 
-    # (Adding the "ports" property to this file will not forward from a Codespace.)
-
-    # Uncomment the next line to use a non-root user for all processes - See https://aka.ms/vscode-remote/containers/non-root for details.
     user: vscode
-
-    # Uncomment the next four lines if you will use a ptrace-based debugger like C++, Go, and Rust.
-    # cap_add:
-    #   - SYS_PTRACE
-    # security_opt:
-    #   - seccomp:unconfined
     networks:
       - my-network
     environment:
@@ -62,21 +52,26 @@ services:
       # REGISTRY_HTTP_TLS_KEY: /certs/domain.key
     ports:
       - "5000:5000"
+    deploy:
+        resources:
+          limits:
+            cpus: '0.1'
     networks:
       - my-network
-  # You can include other services not opened by VS Code as well
-  another-service:
-    image: mongo:latest
-    restart: unless-stopped
   nats:
+  
       #image: nats:2.8.4-alpine
       image: nats:2.9.8-alpine
       ports:
         - "4222:4222"
         - "7422:7422"
         - "9223:9223"
+      deploy:
+        resources:
+          limits:
+            cpus: '0.1'
       volumes:
-        - ../templates/configs/main.conf:/etc/nats/main.conf
+        - ../templates/nats_configs/main.conf:/etc/nats/main.conf
       command: [ "-js" ,"-c","/etc/nats/main.conf"]
       networks:
         - my-network
@@ -85,9 +80,28 @@ services:
       ports:
         - "7083:7083"
       volumes:
-        - ../templates/configs/leaf.conf:/etc/nats/leaf.conf
-        - ../templates/data/current:/etc/nats/etc/current
+        - ../templates/nats_configs/leaf.conf:/etc/nats/leaf.conf
+        - ../templates/nats-rest-config-proxy_data/current:/etc/nats/etc/current
+        - ../certs:/certs
+      deploy:
+        resources:
+          limits:
+            cpus: '0.1'
       command: [ "-js" ,"-c","/etc/nats/leaf.conf"]
+      networks:
+        - my-network
+  nats_leaf_insecure:
+      image: nats:2.9.8-alpine
+      ports:
+        - "7082:7082"
+      deploy:
+        resources:
+          limits:
+            cpus: '0.1'
+      volumes:
+        - ../templates/nats_configs/insecure_leaf.conf:/etc/nats/insecure_leaf.conf
+        - ../templates/nats-rest-config-proxy_data/current:/etc/nats/etc/current
+      command: [ "-js" ,"-c","/etc/nats/insecure_leaf.conf"]
       networks:
         - my-network
   wasmcloud:
@@ -100,11 +114,14 @@ services:
       WASMCLOUD_HOST_SEED: SNAKDMBLB7TPIL4K3YXDGLUDXYFEEB2UAUXSAJYFBUKAWXBT6VPSTSE34Y
       WASMCLOUD_CLUSTER_SEED: SCALV3N2M5JRUOCSLTRTAIQYJSBKNZ3XMGME2XI3L3OSR2RRSYUTMHAN7E
       WASMCLOUD_OCI_ALLOWED_INSECURE: registry:5000,localhost:5000
-#      OTEL_TRACES_EXPORTER: otlp
-#      OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:55681
+
     ports:
       - "4000:4000"
       - "8080-8089:8080-8089" # Allows exposing examples on ports 8080-8089
+    deploy:
+      resources:
+        limits:
+          cpus: '0.4'
     # As in the "app" service, use "forwardPorts" in **devcontainer.json** to forward an app port locally.
     networks:
       - my-network
@@ -119,10 +136,33 @@ services:
   #     - LANG=C.UTF-8
   #   networks:
   #     - my-network
-  redis:
-    image: redis:6.2
+  nginx:
+    image: nginx:1.24.0
     ports:
-      - "6379:6379"
+      - "4003:4003"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+    volumes:
+      - ../certs:/certs
+      - ../templates/www/public:/var/www/html/static
+      - ../templates/nginx_configs/nginx.conf:/etc/nginx/nginx.conf:ro
+  nginx_insecure:
+    image: nginx:1.24.0
+    ports:
+      - "4002:4002"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+    volumes:
+      - ../templates/www/public:/var/www/html/static
+      - ../templates/nginx_configs/nginx_insecure.conf:/etc/nginx/nginx.conf:ro
+  # redis:
+  #   image: redis:6.2
+  #   ports:
+  #     - "6379:6379"
 networks:
   my-network:
     external: true
