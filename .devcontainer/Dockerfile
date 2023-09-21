@@ -25,7 +25,6 @@ RUN cargo install -f cargo-make
 RUN rustup target add wasm32-unknown-unknown
 RUN apt-get install iputils-ping -y
 RUN wget "https://github.com/nats-io/nats-rest-config-proxy/releases/download/v0.7.0/nats-rest-config-proxy-v0.7.0-linux-$(uname -m | grep -q '^aarch64' && echo 'arm64' || echo 'amd64' ).deb" && dpkg -i "nats-rest-config-proxy-v0.7.0-linux-$(uname -m | grep -q '^aarch64' && echo 'arm64' || echo 'amd64' ).deb"
-RUN cargo install cross --git https://github.com/cross-rs/cross
 RUN apt-get update \
     && apt-get install -y apt-transport-https ca-certificates curl gnupg2 lsb-release \
     && curl -fsSL https://download.docker.com/linux/$(lsb_release -is | tr '[:upper:]' '[:lower:]')/gpg | apt-key add - 2>/dev/null \

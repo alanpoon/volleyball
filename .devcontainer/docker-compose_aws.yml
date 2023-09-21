@@ -6,7 +6,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.7'
+          cpus: '0.2'
     build: 
       context: .
       dockerfile: Dockerfile
@@ -18,12 +18,12 @@ services:
     init: true
     volumes:
       # This is where VS Code should expect to find your project's source code and the value of "workspaceFolder" in .devcontainer/devcontainer.json
-      - ..:/workspace:cached
-      - ../templates/wasmcloud_contexts:/home/vscode/.wash/contexts
-      - ../templates/wash_keys:/home/vscode/.wash/keys
-      - ../../cargo2/registry:/usr/local/cargo/registry
-      - ../../cargo2/git:/usr/local/cargo/git
-      - ../templates/nats-rest-config-proxy_data/current:/etc/current
+      - /home/ubuntu/workspace/volleyball:/workspace:cached
+      - /home/ubuntu/workspace/volleyball/templates/wasmcloud_contexts:/home/vscode/.wash/contexts
+      - /home/ubuntu/workspace/volleyball/templates/wash_keys:/home/vscode/.wash/keys
+      - /home/ubuntu/workspace/cargo2/registry:/usr/local/cargo/registry
+      - /home/ubuntu/workspace/cargo2/git:/usr/local/cargo/git
+      - /home/ubuntu/workspace/volleyball/templates/nats-rest-config-proxy_data/current:/etc/current
       # Uncomment the next line to use Docker from inside the container. See https://aka.ms/vscode-remote/samples/docker-from-docker-compose for details.
       
       - /var/run/docker.sock:/var/run/docker.sock 
@@ -35,9 +35,9 @@ services:
       - my-network
     environment:
       #RUST_LOG: info,hyper=info
-      WASMCLOUD_RPC_HOST: nats
-      WASMCLOUD_CTL_HOST: nats
-      WASMCLOUD_PROV_RPC_HOST: nats
+      WASMCLOUD_RPC_HOST: 172.17.0.1
+      WASMCLOUD_CTL_HOST: 172.17.0.1
+      WASMCLOUD_PROV_RPC_HOST: 172.17.0.1
       WASMCLOUD_HOST_SEED: SNAKDMBLB7TPIL4K3YXDGLUDXYFEEB2UAUXSAJYFBUKAWXBT6VPSTSE34Y
       WASMCLOUD_CLUSTER_SEED: SCALV3N2M5JRUOCSLTRTAIQYJSBKNZ3XMGME2XI3L3OSR2RRSYUTMHAN7E
       WASMCLOUD_OCI_ALLOWED_INSECURE: registry:5000,localhost:5000
@@ -45,7 +45,7 @@ services:
       - "4001:4001"
       - "4567:4567"
     extra_hosts:
-      - "localhost:172.17.0.1"
+      - "myregistry.domain.com:172.17.0.1"
   registry:
     image: registry:2.7
     ports:
@@ -56,8 +56,21 @@ services:
             cpus: '0.1'
     networks:
       - my-network
+  registry_secure:
+    image: registry:2.7
+    ports:
+      - "5001:5001"
+    environment:
+      REGISTRY_HTTP_ADDR: 0.0.0.0:443
+      REGISTRY_HTTP_TLS_CERTIFICATE: /certs/server-cert.pem
+      REGISTRY_HTTP_TLS_KEY: /certs/server-key.pem
+    deploy:
+        resources:
+          limits:
+            cpus: '0.1'
+    networks:
+      - my-network
   nats:
-  
       #image: nats:2.8.4-alpine
       image: nats:2.9.8-alpine
       ports:
@@ -69,39 +82,43 @@ services:
           limits:
             cpus: '0.1'
       volumes:
-        - ../templates/nats_configs/main.conf:/etc/nats/main.conf
+        - /home/ubuntu/workspace/volleyball/templates/nats_configs/main.conf:/etc/nats/main.conf
       command: [ "-js" ,"-c","/etc/nats/main.conf"]
       networks:
         - my-network
   nats_leaf:
-      image: nats:2.9.8-alpine
-      ports:
-        - "7083:7083"
-      volumes:
-        - ../templates/nats_configs/leaf.conf:/etc/nats/leaf.conf
-        - ../templates/nats-rest-config-proxy_data/current:/etc/nats/etc/current
-        - ../certs:/certs
-      deploy:
-        resources:
-          limits:
-            cpus: '0.1'
-      command: [ "-js" ,"-c","/etc/nats/leaf.conf"]
-      networks:
-        - my-network
+    image: nats:2.9.8-alpine
+    ports:
+      - "7083:7083"
+    volumes:
+      - /home/ubuntu/workspace/volleyball/templates/nats_configs/leaf.conf:/etc/nats/leaf.conf
+      - /home/ubuntu/workspace/volleyball/templates/nats-rest-config-proxy_data/current:/etc/nats/etc/current
+      - /home/ubuntu/workspace/volleyball/certs:/certs
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+    command: [ "-js" ,"-c","/etc/nats/leaf.conf"]
+    networks:
+      - my-network
+    extra_hosts:
+    - "nats:172.17.0.1"
   nats_leaf_insecure:
-      image: nats:2.9.8-alpine
-      ports:
-        - "7082:7082"
-      deploy:
-        resources:
-          limits:
-            cpus: '0.1'
-      volumes:
-        - ../templates/nats_configs/insecure_leaf.conf:/etc/nats/insecure_leaf.conf
-        - ../templates/nats-rest-config-proxy_data/current:/etc/nats/etc/current
-      command: [ "-js" ,"-c","/etc/nats/insecure_leaf.conf"]
-      networks:
-        - my-network
+    image: nats:2.9.8-alpine
+    ports:
+      - "7082:7082"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+    volumes:
+      - /home/ubuntu/workspace/volleyball/templates/nats_configs/insecure_leaf.conf:/etc/nats/insecure_leaf.conf
+      - /home/ubuntu/workspace/volleyball/templates/nats-rest-config-proxy_data/current:/etc/nats/etc/current
+    command: [ "-js" ,"-c","/etc/nats/insecure_leaf.conf"]
+    networks:
+      - my-network
+    extra_hosts:
+      - "nats:172.17.0.1"
   wasmcloud:
     image: wasmcloud/wasmcloud_host:latest
     environment:
@@ -123,6 +140,8 @@ services:
     # As in the "app" service, use "forwardPorts" in **devcontainer.json** to forward an app port locally.
     networks:
       - my-network
+    extra_hosts:
+      - "nats:172.17.0.1"
   # wadm:
   #   depends_on:
   #     - "nats"
@@ -143,9 +162,9 @@ services:
         limits:
           cpus: '0.1'
     volumes:
-      - ../certs:/certs
-      - ../templates/www/public:/var/www/html/static
-      - ../templates/nginx_configs/nginx.conf:/etc/nginx/nginx.conf:ro
+      - /home/ubuntu/workspace/volleyball/certs:/certs
+      - /home/ubuntu/workspace/volleyball/templates/www/public:/var/www/html/static
+      - /home/ubuntu/workspace/volleyball/templates/nginx_configs/nginx.conf:/etc/nginx/nginx.conf:ro
   nginx_insecure:
     image: nginx:1.24.0
     ports:
@@ -155,12 +174,13 @@ services:
         limits:
           cpus: '0.1'
     volumes:
-      - ../templates/www/public:/var/www/html/static
-      - ../templates/nginx_configs/nginx_insecure.conf:/etc/nginx/nginx.conf:ro
+      - /home/ubuntu/workspace/volleyball/templates/www/public:/var/www/html/static
+      - /home/ubuntu/workspace/volleyball/templates/nginx_configs/nginx_insecure.conf:/etc/nginx/nginx.conf:ro
   # redis:
   #   image: redis:6.2
   #   ports:
   #     - "6379:6379"
 networks:
   my-network:
+    name: my-network
     external: true

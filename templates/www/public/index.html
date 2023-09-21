@@ -22,6 +22,8 @@
         let domain = (new URL(location));
         if (domain.hostname.includes("netlify")){
             ws_location = "bevy.wasmmock"
+        }else if (location.protocol == 'http:'){
+            ws_location = domain.hostname
         }
         return ws +ws_location+":"+port;
     }
