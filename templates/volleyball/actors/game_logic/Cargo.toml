@@ -16,7 +16,7 @@ futures = "0.3"
 wasmcloud-interface-logging = "0.10.0"
 wasmcloud-interface-messaging = "0.10.0"
 wasmcloud-interface-numbergen = "0.10.0"
-wasmcloud-interface-thread = { path = "../../../interfaces/thread/rust"}
+wasmcloud-interface-thread = { path = "../../../../interfaces/thread/rust"}
 convert_case = "0.1.0"
 lazy_static = "1.4.0"
 shared = {path = "../../shared"}

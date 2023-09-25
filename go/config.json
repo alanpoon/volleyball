@@ -1,0 +1,18 @@
+{
+    "listeners": {
+        "127.0.0.1:8080": {
+            "pass": "routes"
+        }
+    },
+
+    "routes": [
+        {
+            "match": {
+                "uri": "*"
+            },
+            "action": {
+                "share": "/Users/alanpoon/Documents/rust/volleyball/go/dir/test_zipv$uri"
+            }
+        }
+    ]
+}

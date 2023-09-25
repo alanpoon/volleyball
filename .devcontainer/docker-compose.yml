@@ -19,11 +19,11 @@ services:
     volumes:
       # This is where VS Code should expect to find your project's source code and the value of "workspaceFolder" in .devcontainer/devcontainer.json
       - ..:/workspace:cached
-      - ../templates/wasmcloud_contexts:/home/vscode/.wash/contexts
-      - ../templates/wash_keys:/home/vscode/.wash/keys
+      - ../configs/wasmcloud_contexts:/home/vscode/.wash/contexts
+      - ../configs/wash_keys:/home/vscode/.wash/keys
       - ../../cargo2/registry:/usr/local/cargo/registry
       - ../../cargo2/git:/usr/local/cargo/git
-      - ../templates/nats-rest-config-proxy_data/current:/etc/current
+      - ../configs/nats-rest-config-proxy_data/current:/etc/current
       # Uncomment the next line to use Docker from inside the container. See https://aka.ms/vscode-remote/samples/docker-from-docker-compose for details.
       
       - /var/run/docker.sock:/var/run/docker.sock 
@@ -51,9 +51,9 @@ services:
     ports:
       - "5000:5000"
     deploy:
-        resources:
-          limits:
-            cpus: '0.1'
+      resources:
+        limits:
+          cpus: '0.1'
     networks:
       - my-network
   nats:
@@ -69,7 +69,7 @@ services:
           limits:
             cpus: '0.1'
       volumes:
-        - ../templates/nats_configs/main.conf:/etc/nats/main.conf
+        - ../configs/nats_configs/main.conf:/etc/nats/main.conf
       command: [ "-js" ,"-c","/etc/nats/main.conf"]
       networks:
         - my-network
@@ -78,8 +78,8 @@ services:
       ports:
         - "7083:7083"
       volumes:
-        - ../templates/nats_configs/leaf.conf:/etc/nats/leaf.conf
-        - ../templates/nats-rest-config-proxy_data/current:/etc/nats/etc/current
+        - ../configs/nats_configs/leaf.conf:/etc/nats/leaf.conf
+        - ../configs/nats-rest-config-proxy_data/current:/etc/nats/etc/current
         - ../certs:/certs
       deploy:
         resources:
@@ -97,8 +97,8 @@ services:
           limits:
             cpus: '0.1'
       volumes:
-        - ../templates/nats_configs/insecure_leaf.conf:/etc/nats/insecure_leaf.conf
-        - ../templates/nats-rest-config-proxy_data/current:/etc/nats/etc/current
+        - ../configs/nats_configs/insecure_leaf.conf:/etc/nats/insecure_leaf.conf
+        - ../configs/nats-rest-config-proxy_data/current:/etc/nats/etc/current
       command: [ "-js" ,"-c","/etc/nats/insecure_leaf.conf"]
       networks:
         - my-network
@@ -145,7 +145,7 @@ services:
     volumes:
       - ../certs:/certs
       - ../templates/www/public:/var/www/html/static
-      - ../templates/nginx_configs/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ../configs/nginx_configs/nginx.conf:/etc/nginx/nginx.conf:ro
   nginx_insecure:
     image: nginx:1.24.0
     ports:
@@ -156,7 +156,7 @@ services:
           cpus: '0.1'
     volumes:
       - ../templates/www/public:/var/www/html/static
-      - ../templates/nginx_configs/nginx_insecure.conf:/etc/nginx/nginx.conf:ro
+      - ../configs/nginx_configs/nginx_insecure.conf:/etc/nginx/nginx.conf:ro
   # redis:
   #   image: redis:6.2
   #   ports:

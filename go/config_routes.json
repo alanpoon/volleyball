@@ -1,0 +1,10 @@
+{
+    "test_zip2":[{
+        "match": {
+            "uri": "*"
+        },
+        "action": {
+            "share": "/Users/alanpoon/Documents/rust/volleyball/go/dir/test_zip2$uri"
+        }
+    }]
+}

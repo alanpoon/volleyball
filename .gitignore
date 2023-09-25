@@ -9,3 +9,5 @@ templates/data/snapshots
 t.txt
 !certs/.gitkeep
 certs/**
+!www/.gitkeep
+www/***

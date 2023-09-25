@@ -45,7 +45,7 @@ services:
       - "4001:4001"
       - "4567:4567"
     extra_hosts:
-      - "myregistry.domain.com:172.17.0.1"
+      - "registry:172.17.0.1"
   registry:
     image: registry:2.7
     ports:
