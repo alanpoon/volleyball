@@ -7,5 +7,9 @@ command = "wasm-bindgen"
 args = ["--out-dir", "public/pkg", "--target", "web", "target/wasm32-unknown-unknown/release/boltless-client.wasm"]
 dependencies = ["build-wasm"]
 
+[tasks.cp]
+command = "cp"
+args = ["-r","public","../www/volleyball"]
+
 [config]
 default_to_workspace = false

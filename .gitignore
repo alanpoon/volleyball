@@ -11,3 +11,5 @@ t.txt
 certs/**
 !www/.gitkeep
 www/***
+go/.env
+tt.txt

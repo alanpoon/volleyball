@@ -63,6 +63,7 @@ func handleHTTP(rpc_able processor.Able) {
 		util.JsonResponse(rw, res)
 	})
 	rtr.HandleFunc("/upload_static", processor.UploadStatic())
+	rtr.HandleFunc("/nginx_update", processor.NginxUpdate())
 	handler := c.Handler(rtr)
 	logger.Infof("Http Server on: " + addr)
 	//fs := http.FileServer(http.Dir("public"))
@@ -77,7 +78,6 @@ func logHandler(fn http.HandlerFunc) http.HandlerFunc {
 		rec := httptest.NewRecorder()
 		fn(rec, r)
 		logger.Infof("url:%v, method:%v, req:%v, resp:%v", r.URL, r.Method, r.Body, rec.Body)
-
 		w.WriteHeader(rec.Code)
 		_, err := rec.Body.WriteTo(w)
 		if err != nil {

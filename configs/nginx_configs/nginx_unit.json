@@ -1,0 +1,21 @@
+{
+    "listeners": {
+        "0.0.0.0:4002": {
+            "pass": "routes/volleyball"
+        },
+        "0.0.0.0:8001": {
+            "pass": "routes/volleyball"
+        }
+    },
+
+    "routes": {
+		"volleyball":[{
+            "match": {
+                "uri": "*"
+            },
+            "action": {
+                "share": "/www/volleyball$uri"
+            }
+        }]
+    }
+}

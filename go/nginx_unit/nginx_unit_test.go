@@ -7,7 +7,7 @@ import (
 )
 
 func TestGetConfigs(t *testing.T) {
-	if res, err := GetConfig(); err == nil {
+	if res, err := GetConfig(make(map[string]interface{})); err == nil {
 		fmt.Println("res", res)
 	} else {
 		t.Errorf("err is %s", err.Error())
@@ -35,50 +35,38 @@ func TestUpdateConfig(t *testing.T) {
 }
 func TestAppendServer(t *testing.T) {
 	var er error
-	if old_config, err := GetConfig(); err == nil {
-		if new_config, err := AppendServer("127.0.0.1:8081", "test_zip2"); err == nil {
-			fmt.Println("new config", new_config)
-			old_config_str, err := json.Marshal(old_config)
-			if err != nil {
-				er = err
-				return
-			}
-			new_config_str, err := json.Marshal(new_config)
-			if err != nil {
-				er = err
-				return
-			}
-			if string(old_config_str) != string(new_config_str) {
-				fmt.Println("old", string(old_config_str))
-				fmt.Println("new", string(new_config_str))
-				if res, err := UpdateConfig(new_config); err == nil {
-					fmt.Println("res", res)
-					if config, err := GetConfig(); err == nil {
-						if l, ok := config["listeners"]; ok {
-							if v, ok := l.(map[string]interface{}); ok {
-								if _, ok := v["127.0.0.1:8081"]; ok {
-									return
-								} else {
-									t.Errorf("Cannot get 127.0.0.1:8081")
-								}
-							} else {
 
-							}
+	if new_config, err := AppendServer("127.0.0.1:8081", "test_zip2"); err == nil {
+		if res, err := UpdateConfig(new_config); err == nil {
+			fmt.Println("res", res)
+			if config, err := GetConfig(make(map[string]interface{})); err == nil {
+				if l, ok := config["listeners"]; ok {
+					if v, ok := l.(map[string]interface{}); ok {
+						if _, ok := v["127.0.0.1:8081"]; ok {
+							return
+						} else {
+							t.Errorf("Cannot get 127.0.0.1:8081")
 						}
 					} else {
-						er = err
-					}
-				} else {
-					er = err
-				}
-			}
 
+					}
+				}
+			} else {
+				er = err
+			}
 		} else {
 			er = err
 		}
 	}
+
 	if er != nil {
 		t.Errorf("error %s", er.Error())
-
+	}
+}
+func TestAppendCert(t *testing.T) {
+	if res, err := AppendCert(""); err == nil {
+		fmt.Println("s", res)
+	} else {
+		t.Error(err.Error())
 	}
 }

@@ -10,6 +10,5 @@ type P struct {
 //func (v P) Start(s []string) {
 
 func main() {
-
 	server.NewServer(P{})
 }

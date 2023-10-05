@@ -32,3 +32,5 @@ RUN apt-get update \
     && apt-get update \
     && apt-get install -y docker-ce-cli
 RUN sudo mkdir -p /home/vscode/.wash && sudo chmod 777 /home/vscode/.wash
+RUN wget "https://go.dev/dl/go1.21.1.linux-$(uname -m | grep -q '^aarch64' && echo 'arm64' || echo 'amd64' ).tar.gz" && tar -xvzf "go1.21.1.linux-$(uname -m | grep -q '^aarch64' && echo 'arm64' || echo 'amd64' ).tar.gz" && cp -r go /usr/local
+RUN ls -a ~

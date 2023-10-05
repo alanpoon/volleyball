@@ -24,6 +24,9 @@ services:
       - ../../cargo2/registry:/usr/local/cargo/registry
       - ../../cargo2/git:/usr/local/cargo/git
       - ../configs/nats-rest-config-proxy_data/current:/etc/current
+      - ../go/.profile:/home/vscode/.profile
+      - ../www:/www
+      - ../configs/nginx_configs_holder:/nginx_configs_holder
       # Uncomment the next line to use Docker from inside the container. See https://aka.ms/vscode-remote/samples/docker-from-docker-compose for details.
       
       - /var/run/docker.sock:/var/run/docker.sock 
@@ -41,6 +44,7 @@ services:
       WASMCLOUD_HOST_SEED: SNAKDMBLB7TPIL4K3YXDGLUDXYFEEB2UAUXSAJYFBUKAWXBT6VPSTSE34Y
       WASMCLOUD_CLUSTER_SEED: SCALV3N2M5JRUOCSLTRTAIQYJSBKNZ3XMGME2XI3L3OSR2RRSYUTMHAN7E
       WASMCLOUD_OCI_ALLOWED_INSECURE: registry:5000,localhost:5000
+      DIR: /www
     ports:
       - "4001:4001"
       - "4567:4567"
@@ -134,29 +138,52 @@ services:
   #     - LANG=C.UTF-8
   #   networks:
   #     - my-network
-  nginx:
-    image: nginx:1.24.0
-    ports:
-      - "4003:4003"
-    deploy:
-      resources:
-        limits:
-          cpus: '0.1'
+  # nginx:
+  #   image: nginx:1.24.0
+  #   ports:
+  #     - "4003:4003"
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '0.1'
+  #   volumes:
+  #     - ../certs:/certs
+  #     - ../templates/www/public:/var/www/html/static
+  #     - ../configs/nginx_configs/nginx.conf:/etc/nginx/nginx.conf:ro
+  # nginx_insecure:
+  #   image: nginx:1.24.0
+  #   ports:
+  #     - "4002:4002"
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '0.1'
+  #   volumes:
+  #     - ../templates/www/public:/var/www/html/static
+  #     - ../configs/nginx_configs/nginx_insecure.conf:/etc/nginx/nginx.conf:ro
+  nginx_unit:
+    container_name: nginx_unit
+    build: 
+      context: .
+      dockerfile: Dockerfile.minimal
     volumes:
       - ../certs:/certs
-      - ../templates/www/public:/var/www/html/static
-      - ../configs/nginx_configs/nginx.conf:/etc/nginx/nginx.conf:ro
-  nginx_insecure:
-    image: nginx:1.24.0
+      - ../configs/nginx_configs/nginx_unit.json:/docker-entrypoint.d/config.json
+      - ../www:/www
+      - ../configs/nginx_configs_holder:/nginx_configs_holder
+    #  - ../configs/nginx_configs/run:/run:rw
     ports:
-      - "4002:4002"
-    deploy:
-      resources:
-        limits:
-          cpus: '0.1'
+      - "8001:8001"
+      - "80:80"
+    networks:
+      - my-network
+    certbot:
+      container_name: certbot
+      image: certbot/certbot
     volumes:
-      - ../templates/www/public:/var/www/html/static
-      - ../configs/nginx_configs/nginx_insecure.conf:/etc/nginx/nginx.conf:ro
+      - 
+      #- ../configs/nginx_configs/run/control.unit.sock:/var/run/control.unit.sock
+      #- ../configs/nginx_configs/run:/var/run:rw
   # redis:
   #   image: redis:6.2
   #   ports:
